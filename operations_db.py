@@ -55,19 +55,19 @@ def f7(table, attr):
     return cursor.fetchall()
 
 '''
-print_time("f1('iris', 'sepal_length', 5.0)")
-print_time("f1('iris', 'sepal_width', 4.0)")
-print_time("f1('iris', 'petal_length', 1.5)")
-print_time("f1('iris', 'petal_width', 5.0)")
+print_time("f1('iris', 'sl', 5.0)")
+print_time("f1('iris', 'sw', 4.0)")
+print_time("f1('iris', 'pl', 1.5)")
+print_time("f1('iris', 'pw', 5.0)")
 print "***"
-print_time("f2('iris', 'sepal_length', 5.0, 5.5)")
-print_time("f2('iris', 'sepal_width', 3.5, 4.0)")
-print_time("f2('iris', 'petal_length', 1.3, 1.5)")
-print_time("f2('iris', 'petal_width', 0.2, 0.4)")
+print_time("f2('iris', 'sl', 5.0, 5.5)")
+print_time("f2('iris', 'sw', 3.5, 4.0)")
+print_time("f2('iris', 'pl', 1.3, 1.5)")
+print_time("f2('iris', 'pw', 0.2, 0.4)")
 '''
 #f6(table, attr1, value1, attr2, value2)
-print_time("f6('iris', 'sepal_length', 5.0, 'petal_length', 1.5)")
-print_time("f6('iris', 'sepal_width', 4.0, 'petal_width', 0.4)")
+print_time("f6('iris', 'sl', 5.0, 'pl', 1.5)")
+print_time("f6('iris', 'sw', 4.0, 'pw', 0.4)")
 print "***"
 
 irisDB.close()
