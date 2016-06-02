@@ -15,9 +15,9 @@ def read_data(filename):
 irisDB = sqlite3.connect('iris.db')  # 150 rekordow
 irisC = irisDB.cursor()
 
-#irisC.execute("DROP TABLE iris")
+irisC.execute("DROP TABLE iris")
 irisC.execute("CREATE TABLE iris (id INTEGER PRIMARY KEY AUTOINCREMENT,"
-              "sepal_length REAL NOT NULL, sepal_width REAL NOT NULL, petal_length NOT NULL, petal_width REAL NOT NULL,"
+              "sl REAL NOT NULL, sw REAL NOT NULL, pl NOT NULL, pw REAL NOT NULL,"
               "class TEXT NOT NULL)")
 
 irisDATA = read_data("iris.csv")
@@ -36,7 +36,7 @@ irisDB.close()
 aDB = sqlite3.connect('abalone.db')  # 4177 rekordow
 aC = aDB.cursor()
 
-#aC.execute("DROP TABLE abalone")
+aC.execute("DROP TABLE abalone")
 aC.execute("CREATE TABLE abalone (id INTEGER PRIMARY KEY AUTOINCREMENT,"
               "s TEXT NOT NULL, l REAL NOT NULL, d REAL NOT NULL, h REAL NOT NULL,"
               "w REAL NOT NULL, shu_w REAL NOT NULL, vis_w REAL NOT NULL, shell_w REAL NOT NULL,"
