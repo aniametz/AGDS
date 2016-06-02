@@ -48,6 +48,12 @@ def f6(table, attr1, value1, attr2, value2):
     cursor.execute("SELECT id FROM {} WHERE {} > ? and {} < ?".format(table, attr1, attr2), (value1, value2))
     return cursor.fetchall()
 
+def f7(table, attr):
+    # najczestsze wartosci attr
+    cursor.execute("SELECT {}, COUNT({}) AS counter FROM {} "
+                   "GROUP BY {} ORDER BY counter DESC LIMIT 1".format(attr, attr, table, attr))
+    return cursor.fetchall()
+
 '''
 print_time("f1('iris', 'sepal_length', 5.0)")
 print_time("f1('iris', 'sepal_width', 4.0)")
