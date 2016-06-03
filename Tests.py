@@ -5,8 +5,11 @@ import os
 from numpy import *
 import sqlite3
 from collections import defaultdict, OrderedDict
-from operator import itemgetter
+from operator import *
 import create_graph as cg
+import networkx as nx
+import matplotlib as plt
+
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -18,29 +21,27 @@ def read_data(filename):
 
 
 def print_time(function_name):
-    timer = timeit.Timer(function_name + "()", "from __main__ import " + function_name)
-    t =  min(timer.repeat(10, 1))*1000
-    print function_name + ": %fms" % (t, )
+    timer = timeit.Timer(function_name, "from __main__ import abaloneG, " + function_name[:2])
+    t = min(timer.repeat(10, 1))*10**6
+    print function_name + ": " + "{:5.2f}".format(t) + " mikrosekund"
 
 
 class Graph(object):
 
     def __init__(self):
         self._graph = {}
-
-    def add_node(self, node):
-        self._graph[node] = defaultdict(list)
-
-    _typedict = {"float": lambda x: float(x), "int": lambda x: int(x), "str": lambda x: str(x)}
+        self._typedict = {"float": lambda x: float(x), "int": lambda x: int(x), "str": lambda x: str(x)}
 
     def add_edges(self, node, connections, column, type="str"):
-        if node not in self._graph:
-            return None
+        d = defaultdict(list)
         for i in range(len(connections)):
             r = str(i + 1)
             value = self._typedict[type](connections[i][column])
-            self._graph[node][value].append(r)
-        return self._graph[node].items()
+            d[value].append(r)
+        self._graph[node] = OrderedDict(sorted(d.items()))
+
+    def has_key(self, node):
+        return node in self._graph
 
     def __getitem__(self, node):
         return self._graph[node]
@@ -49,38 +50,32 @@ class Graph(object):
         return self._graph.iteritems()
 
     def __str__(self):
-        return "{}".format(dict(self._graph))
+        return "{}".format(self._graph)
 
 
 abaloneDATA = read_data("abalone.csv")
 abaloneG = Graph()
-abaloneG.add_node("s")
 abaloneG.add_edges("s", abaloneDATA, 0)
-abaloneG.add_node("l")
 abaloneG.add_edges("l", abaloneDATA, 1, "float")
-abaloneG.add_node("d")
 abaloneG.add_edges("d", abaloneDATA, 2, "float")
-abaloneG.add_node("h")
 abaloneG.add_edges("h", abaloneDATA, 3, "float")
-abaloneG.add_node("w")
 abaloneG.add_edges("w", abaloneDATA, 4, "float")
+abaloneG.add_edges("r", abaloneDATA, 0)
 
+print any(d["h"] == '0.002' for d in abaloneG)
 
-def binary_search(list, item):
-    first = 0
-    last = len(list)-1
-    found = False
-    while first <= last and not found:
-        middle = int((first + last)/2)
-        if list[middle][0] == item:
-            found = True
-        else:
-            if item < list[middle][0]:
-                last = middle-1
-            else:
-                first = middle+1
-    return list[middle][0]
+G = nx.Graph()
+G.add_nodes_from(["s", "l", "d", "h", "w", "r"])
 
+G.clear()
+for i in range(len(abaloneDATA)):
+    r = str(i + 1)
+    G.add_nodes_from(abaloneDATA[i][0])
+    G.add_edge("s", abaloneDATA[i][0])
 
+print G.number_of_nodes()
+print G.number_of_edges()
+print nx.degree(G)
 
+nx.draw(G)
 
