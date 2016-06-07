@@ -1,7 +1,6 @@
 import timeit
-import operator
+from itertools import *
 import create_graph as cg
-from collections import OrderedDict
 
 
 def print_time(function_name):
@@ -11,51 +10,70 @@ def print_time(function_name):
 
 base_graph = [cg.irisG, cg.abaloneG]
 
+def ch(l):
+    return set(chain.from_iterable(l))
 
 def f1(i, attr, value):
     # obiekty o attr rownym val w i-tym grafie
-    return base_graph[i][attr][value]
+    start = base_graph[i][attr].key.index(value)
+    return base_graph[i][attr].value[start]
 
 
 def f2(i, attr, value1, value2):
     # obiekty o attr miedzy value1 a value2 w i-tym grafie
-    return [v for k, v in base_graph[i][attr].items() if value1 < k < value2]
+    start = base_graph[i][attr].key.index(value1)
+    stop = base_graph[i][attr].key.index(value2)
+    return base_graph[i][attr].value[start+1:stop-1]
 
 
 def f3(i, attr, value):
     #obiekty o attr powyzej value w i-tym grafie
-    return [v for k, v in base_graph[i][attr].items() if k > value]
+    start = base_graph[i][attr].key.index(value)
+    return base_graph[i][attr].value[start+1:]
 
 
 def f4(i, attr, n):
     #n obiektow o max wartsociach attr w i-tym grafie
-    chained = reduce(operator.add, [v for k, v in base_graph[i][attr].items()])
-    return chained[-n:]
+    chained = ch(base_graph[i][attr].value[-n:])
+    return chained[:n]
 
 
-def f7(i, attr, n):
-    s = sorted(base_graph[i][attr].items())
-    print s
-    arr = []
-    for v in s:
-        for i in v[1]:
-            if len(arr) == n: break
-            arr += i
-    return arr
-
-
-def f5(i, attr, record):
-    #informacja o wartosci attr dla obiektu record
-    for k, v in base_graph[i][attr].items():
-        for i in v:
-            if i == record:
-                return k
-
-def f6(i, attr1, value1, attr2, value2):
+def f5(i, attr1, value1, attr2, value2):
     # obiekty o wartosci attr1 powyzej value1 i wartosci attr2 ponizej value2
-    chained1 = [v for k, v in base_graph[i][attr1].items() if k > value1]
-    chained2 = [v for k, v in base_graph[i][attr2].items() if k < value2]
-    return [v for v in chained1 if v in chained2]
+    start1 = base_graph[i][attr1].key.index(value1)
+    d1 = base_graph[i][attr1].value[start1+1:]
+    stop2 = base_graph[i][attr2].key.index(value2)
+    d2 = base_graph[i][attr2].value[:stop2-1]
+    return ch(d1) & ch(d2)
+
+
+def f6(i, attr):
+    # obiekty o najczesciej wsytepujacej wartosci attr
+    l = map(len, base_graph[i][attr].value)
+    i = l.index(max(l))
+    return base_graph[i][attr].key[i], base_graph[i][attr].value[i]
+
+
+def fa(record):
+    # calkowite podobienstwo wzgledem l, d, h w grafie abalone
+    r = cg.abaloneG["r"][record]
+    v1 = cg.abaloneG["l"].key.index(r[1])
+    v2 = cg.abaloneG["d"].key.index(r[2])
+    v3 = cg.abaloneG["h"].key.index(r[3])
+    return set(cg.abaloneG["l"].value[v1]) & set(cg.abaloneG["d"].value[v2]) & set(cg.abaloneG["h"].value[v3])
+
+
+def fi(record):
+    # calkowite podobienstwo wzgledem sl, pl w grafie iris
+    r = cg.irisG["r"][record]
+    v1 = cg.irisG["sl"].key.index(r[0])
+    v2 = cg.irisG["pl"].key.index(r[2])
+    return set(cg.irisG["sl"].value[v1]) & set(cg.irisG["pl"].value[v2])
+
+
+def f8(i, attr):
+    # wzorce calkowicie rozlaczne wzgledem jednego atrybutu
+    return base_graph[i][attr].value[0], base_graph[i][attr].value[-1]
 
 '''
 print_time("f1(0, 'sl', 5.0)")
@@ -103,5 +121,3 @@ print_time("f6(0, 'sw', 4.0, 'pw', 0.4)")
 print_time("f6(1, 'l', 0.55, 'w', 0.0155)")
 print_time("f6(1, 'l', 0.38, 'd', 0.515)")
 
-print list(cg.abaloneG["l"])[4]
-print f7(1, 'l', 1)
