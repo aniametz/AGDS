@@ -5,8 +5,9 @@ import sqlite3
 
 def print_time(function_name):
     timer = timeit.Timer(function_name, "from __main__ import " + function_name[:2])
-    t = min(timer.repeat(10, 1))*1000
-    print function_name + ": %fms" % (t, )
+    t = min(timer.repeat(100, 1))*10**6
+    return round(t, 3)
+    # print function_name + ": " + "{:5.2f}".format(t) + " mikrosekund"
 
 
 irisDB = sqlite3.connect('iris.db')
@@ -33,107 +34,77 @@ def f3(table, attr, value):
 
 def f4(table, attr, n):
     # n obiektow o max wartsociach attr
-    cursor.execute("SELECT id FROM [} ORDER BY {} DESC LIMIT ?".format(table, attr), (n, ))
+    cursor.execute("SELECT id FROM {} ORDER BY {} DESC LIMIT ?".format(table, attr), (n, ))
     return cursor.fetchall()
 
 
-def f5(table, attr, record):
-    # informacja o wartosci attr dla obiektu record
-    cursor.execute("SELECT {} FROM {} WHERE id = 1".format(attr, table), (record, ))
-    return cursor.fetchall()
-
-
-def f6(table, attr1, value1, attr2, value2):
+def f5(table, attr1, value1, attr2, value2):
     # obiekty o wartsoci attr1 powyzej value1 i attr2 ponizej value2
     cursor.execute("SELECT id FROM {} WHERE {} > ? and {} < ?".format(table, attr1, attr2), (value1, value2))
     return cursor.fetchall()
 
-def f7(table, attr):
-    # najczestsze wartosci attr
+
+def f6(table, attr):
+    # obiekty o najczesciej wsytepujacej wartosci attr
     cursor.execute("SELECT {}, COUNT({}) AS counter FROM {} "
                    "GROUP BY {} ORDER BY counter DESC LIMIT 1".format(attr, attr, table, attr))
     return cursor.fetchall()
 
-'''
-print_time("f1('iris', 'sl', 5.0)")
-print_time("f1('iris', 'sw', 4.0)")
-print_time("f1('iris', 'pl', 1.5)")
-print_time("f1('iris', 'pw', 5.0)")
-print "***"
+def f8(table, attr):
+    # obiekty calkowicie rozlaczne wzgledem jednego atrybutu
+    cursor.execute("SELECT {} FROM {} ORDER BY {} DESC LIMIT 1".format(attr, table, attr))
+    max = cursor.fetchall()
+    max = max[0][0]
+    cursor.execute("SELECT id FROM {} WHERE {} = ?".format(table, attr), (max,))
+    smax = cursor.fetchall()
+    cursor.execute("SELECT {} FROM {} ORDER BY {} ASC LIMIT 1".format(attr, table, attr))
+    min = cursor.fetchall()
+    min = min[0][0]
+    cursor.execute("SELECT id FROM {} WHERE {} = ?".format(table, attr), (min,))
+    smin = cursor.fetchall()
+    return smin, smax
+
+
 print_time("f2('iris', 'sl', 5.0, 5.5)")
 print_time("f2('iris', 'sw', 3.5, 4.0)")
 print_time("f2('iris', 'pl', 1.3, 1.5)")
 print_time("f2('iris', 'pw', 0.2, 0.4)")
-'''
-#f6(table, attr1, value1, attr2, value2)
-print_time("f6('iris', 'sl', 5.0, 'pl', 1.5)")
-print_time("f6('iris', 'sw', 4.0, 'pw', 0.4)")
-print "***"
+print_time("f5('iris', 'sl', 5.0, 'pl', 1.5)")
+print_time("f5('iris', 'sw', 4.0, 'pw', 0.4)")
+
+tf1_IRISDB = [print_time("f1('iris', 'sl', 5.0)"), print_time("f1('iris', 'sw', 4.0)"),
+              print_time("f1('iris', 'pl', 1.5)"), print_time("f1('iris', 'pw', 5.0)")]
+
+tf4_IRISDB = [print_time("f4('iris', 'sl', 10)"), print_time("f4('iris', 'sw', 10)"),
+              print_time("f4('iris', 'pl', 10)"), print_time("f4('iris', 'pw', 10)")]
+
+tf6_IRISDB = [print_time("f6('iris', 'sl')"), print_time("f6('iris', 'sw')"),
+              print_time("f6('iris', 'pl')"), print_time("f6('iris', 'pw')")]
+
+tf8_IRISDB = [print_time("f8('iris', 'sl')"), print_time("f8('iris', 'sw')"),
+              print_time("f8('iris', 'pl')"), print_time("f8('iris', 'pw')")]
 
 irisDB.close()
 
 abaloneDB = sqlite3.connect('abalone.db')
 cursor = abaloneDB.cursor()
 
-'''
-print "***"
-print_time("f1('abalone', 'l', 0.38)")
-print_time("f1('abalone', 'w', 0.887)")
-print_time("f1('abalone', 'shell_w', 0.115)")
-print_time("f1('abalone', 'ring', 9.0)")
-print "***"
-'''
-'''
 print_time("f2('abalone', 'l', 0.38, 0.55)")
 print_time("f2('abalone', 'w', 0.002, 0.0155)")
 print_time("f2('abalone', 'shell_w', 0.115, 0.2)")
 print_time("f2('abalone', 'ring', 9.0, 12)")
-print "***"
-'''
-#f6(table, attr1, value1, attr2, value2)
-print_time("f6('abalone', 'l', 0.55, 'w', 0.0155)")
-print_time("f6('abalone', 'shell_w', 0.2, 'ring', 9.0)")
-print "***"
+print_time("f5('abalone', 'l', 0.55, 'w', 0.0155)")
+print_time("f5('abalone', 'shell_w', 0.2, 'ring', 9.0)")
 
-'''
-#korelacja miedzy sl a sw w klasie setosa - numpy wykorzystane
-#(Avg(X * Y) - Avg(X) * Avg(Y)) / (StDevP(X) * StDevP(Y))
-start = time.clock()
-irisC.execute("SELECT avg(sepal_length*sepal_width), avg(sepal_length), avg(sepal_width) FROM iris WHERE id < 50")
-avg = irisC.fetchall()
-irisC.execute("SELECT sepal_length FROM iris WHERE id < 50")
-d1 = irisC.fetchall()
-s1 = std(d1)
-irisC.execute("SELECT sepal_width FROM iris WHERE id < 50")
-d2 = irisC.fetchall()
-s2 = std(d2)
-#print (avg[0][0] - avg[0][1]*avg[0][2])/(s1*s2)
-end = time.clock()
-#print(end - start)
+tf1_ABADB = [print_time("f1('abalone', 'l', 0.38)"), print_time("f1('abalone', 'w', 0.887)"),
+             print_time("f1('abalone', 'shell_w', 0.115)"), print_time("f1('abalone', 'ring', 9.0)")]
 
-#selekcja podobnych wzorcow +/- 0.1
-#rekord 1: 5.1,3.5,1.4,0.2,Iris-setosa
-start = time.clock()
-var = 0.1
+tf4_ABADB = [print_time("f4('abalone', 'l', 10)"), print_time("f4('abalone', 'd', 10)"),
+              print_time("f4('abalone', 'h', 10)"), print_time("f4('abalone', 'w', 10)")]
 
-res = []
-for id in range(1, 151):
-    irisC.execute("SELECT sepal_length, sepal_width, petal_length, sepal_width, class FROM iris WHERE id = ?", (id,))
-    d = irisC.fetchall()
-    irisC.execute("SELECT id, class FROM iris WHERE sepal_length < ? and sepal_length > ? "
-                  "and sepal_width < ? and sepal_width > ? "
-                  "and petal_length < ? and petal_length > ? "
-                  "and sepal_width < ? and sepal_width > ?",
-                  (d[0][0] + var, d[0][0] - var, d[0][1] + var, d[0][1] - var,
-                   d[0][2] + var, d[0][2] - var, d[0][3] + var, d[0][3] - var))
-    f = irisC.fetchall()
-    if len(f) > 1:
-        res += [f]
-#print res
-end = time.clock()
-#print(end - start)
+tf6_ABADB = [print_time("f6('abalone', 'l')"), print_time("f6('abalone', 'd')"),
+             print_time("f6('abalone', 'h')"), print_time("f6('abalone', 'w')")]
 
-irisDB.close()
-
-'''
+tf8_ABADB = [print_time("f8('abalone', 'l')"), print_time("f8('abalone', 'd')"),
+             print_time("f8('abalone', 'h')"), print_time("f8('abalone', 'w')")]
 

@@ -18,7 +18,7 @@ irisC = irisDB.cursor()
 irisC.execute("DROP TABLE iris")
 irisC.execute("CREATE TABLE iris (id INTEGER PRIMARY KEY AUTOINCREMENT,"
               "sl REAL NOT NULL, sw REAL NOT NULL, pl NOT NULL, pw REAL NOT NULL,"
-              "class TEXT NOT NULL)")
+              "cl TEXT NOT NULL)")
 
 irisDATA = read_data("iris.csv")
 del irisDATA[-1]
