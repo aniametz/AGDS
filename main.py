@@ -50,6 +50,7 @@ class MainApplication(tk.Frame):
         t.bind('1', self.f1)
         t.bind('2', self.f2)
 
+
     def table(self, event):
         pass
 
