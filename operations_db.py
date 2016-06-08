@@ -14,7 +14,7 @@ cursor = irisDB.cursor()
 
 
 def f1(table, attr, value):
-    # obiekty o wartosci attr rownej value z tabeli table
+    # obiekty o wartosci attr rownej value
     cursor.execute("SELECT id FROM {} WHERE {} = ?".format(table, attr), (value, ))
     return cursor.fetchall()
 
@@ -49,6 +49,15 @@ def f6(table, attr):
                    "GROUP BY {} ORDER BY counter DESC LIMIT 1".format(attr, attr, table, attr))
     return cursor.fetchall()
 
+
+def fi(record):
+    # obiekty o calkowitym podobienstwie w grafie iris
+    cursor.execute("SELECT sl, sw, pl, pw FROM iris WHERE id = ?", (record,))
+    r = cursor.fetchall()
+    cursor.execute("SELECT id FROM iris WHERE sl = ? AND sw = ? AND pl = ? AND pw = ?", (r[0][0], r[0][1], r[0][2], r[0][3]))
+    return cursor.fetchall()
+
+
 def f8(table, attr):
     # obiekty calkowicie rozlaczne wzgledem jednego atrybutu
     cursor.execute("SELECT {} FROM {} ORDER BY {} DESC LIMIT 1".format(attr, table, attr))
@@ -63,61 +72,18 @@ def f8(table, attr):
     smin = cursor.fetchall()
     return smin, smax
 
-
-# print_time("f2('iris', 'sl', 5.0, 5.5)")
-# print_time("f2('iris', 'sw', 3.5, 4.0)")
-# print_time("f2('iris', 'pl', 1.3, 1.5)")
-# print_time("f2('iris', 'pw', 0.2, 0.4)")
-# print_time("f5('iris', 'sl', 5.0, 'pl', 1.5)")
-# print_time("f5('iris', 'sw', 4.0, 'pw', 0.4)")
-# print_time("f1('iris', 'sl', 5.0)")
-# print_time("f1('iris', 'sw', 4.0)")
-# print_time("f1('iris', 'pl', 1.5)")
-# print_time("f1('iris', 'pw', 5.0)")
-
-# print_time("f4('iris', 'sl', 10)")
-# print_time("f4('iris', 'sw', 10)")
-# print_time("f4('iris', 'pl', 10)")
-# print_time("f4('iris', 'pw', 10)")
-# print '***'
-# print_time("f6('iris', 'sl')")
-# print_time("f6('iris', 'sw')")
-# print_time("f6('iris', 'pl')")
-# print_time("f6('iris', 'pw')")
-# print '***'
-# print_time("f8('iris', 'sl')")
-# print_time("f8('iris', 'sw')")
-# print_time("f8('iris', 'pl')")
-# print_time("f8('iris', 'pw')")
-# print '***'
 irisDB.close()
 
 abaloneDB = sqlite3.connect('abalone.db')
 cursor = abaloneDB.cursor()
 
-# print_time("f2('abalone', 'l', 0.38, 0.55)")
-# print_time("f2('abalone', 'w', 0.002, 0.0155)")
-# print_time("f2('abalone', 'shell_w', 0.115, 0.2)")
-# print_time("f2('abalone', 'ring', 9.0, 12)")
-# print_time("f5('abalone', 'l', 0.55, 'w', 0.0155)")
-# print_time("f5('abalone', 'shell_w', 0.2, 'ring', 9.0)")
-# print_time("f1('abalone', 'l', 0.38)")
-# print_time("f1('abalone', 'w', 0.887)")
-# print_time("f1('abalone', 'shell_w', 0.115)")
-# print_time("f1('abalone', 'ring', 9.0)")
 
-# print_time("f4('abalone', 'l', 10)")
-# print_time("f4('abalone', 'd', 10)")
-# print_time("f4('abalone', 'h', 10)")
-# print_time("f4('abalone', 'w', 10)")
-# print '***'
-# print_time("f6('abalone', 'l')")
-# print_time("f6('abalone', 'd')")
-# print_time("f6('abalone', 'h')")
-# print_time("f6('abalone', 'w')")
-# print '***'
-# print_time("f8('abalone', 'l')")
-# print_time("f8('abalone', 'd')")
-# print_time("f8('abalone', 'h')")
-# print_time("f8('abalone', 'w')")
+def fa(record):
+    # calkowite podobienstwo wzgledem l, d, h w grafie abalone
+    cursor.execute("SELECT l, d, h FROM abalone WHERE id = ?", (record,))
+    r = cursor.fetchall()
+    cursor.execute("SELECT id FROM abalone WHERE l = ? AND d = ? AND h = ?", (r[0][0], r[0][1], r[0][2]))
+    return cursor.fetchall()
+
+
 
