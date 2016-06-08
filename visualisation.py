@@ -5,44 +5,47 @@ import matplotlib
 font = {'size': 16}
 matplotlib.rc('font', **font)
 
-df = DataFrame([[0.000467, 0.068580], [0.000467, 0.063915], [0.000467, 0.059250], [0.000467, 0.063915]],
-                columns=['graf', 'tablica'])
+data = [[1.40, 66.25], [1.87, 62.98], [1.40, 57.85], [1.40, 64.85]]
+df = DataFrame(data, columns=['graf', 'tablica'])
 df.plot.bar(color=['#CDDC39', '#2196F3'], rot=0)
-plt.title('Filtracja 1 - Iris')
+plt.title('Iris I')
 plt.xlabel('Operacja')
-plt.ylabel('Czas [ms]')
+plt.ylabel('Czas [microsec]')
 plt.show()
 
 plt.cla()
 plt.clf()
 
-df = DataFrame([[0.000467, 0.100304], [0.000467, 0.117566], [0.000467, 0.105436], [0.000467, 0.116166]],
-               columns=['graf', 'tablica'])
+data = [[1.40, 416.61], [1.40, 420.81], [1.40, 390.49], [0.93, 426.41]]
+df = DataFrame(data, columns=['graf', 'tablica'])
 df.plot.bar(color=['#CDDC39', '#2196F3'], rot=0)
-plt.title('Filtracja 1 - Abalone')
+plt.title('Iris II')
 plt.xlabel('Operacja')
-plt.ylabel('Czas [ms]')
+plt.ylabel('Czas [microsec]')
 plt.show()
 
 plt.cla()
 plt.clf()
 
-df = DataFrame([[0.005598, 0.082110], [0.004199, 0.071379], [0.006531, 0.061116], [0.003732, 0.079777]],
+df = DataFrame([[2.33, 921.87], [18.66, 1008.18], [4.20, 1078.62], [1.87, 1145.34 ]],
                columns=['graf', 'tablica'])
 df.plot.bar(color=['#CDDC39', '#2196F3'], rot=0)
-plt.legend(loc="upper right")
-plt.title('Filtracja 2 - Iris')
+plt.title('Abalone I')
 plt.xlabel('Operacja')
-plt.ylabel('Czas [ms]')
+plt.ylabel('Czas [microsec]')
 plt.show()
 
 plt.cla()
 plt.clf()
 
-df = DataFrame([[0.021460, 1.885255], [0.334503, 1.209717], [0.127363, 1.753226], [0.004199, 1.402861]],
+
+df = DataFrame([[16.80, 8585.58], [14.46, 8680.29], [8.40, 9038.12], [237.00, 10536.62]],
                columns=['graf', 'tablica'])
 df.plot.bar(color=['#CDDC39', '#2196F3'], rot=0)
-plt.title('Filtracja 2 - Abalone')
+plt.title('Abalone II')
 plt.xlabel('Operacja')
-plt.ylabel('Czas [ms]')
+plt.ylabel('Czas [microsec]')
 plt.show()
+
+plt.cla()
+plt.clf()

@@ -6,8 +6,7 @@ import create_graph as cg
 def print_time(function_name):
     timer = timeit.Timer(function_name, "from __main__ import " + function_name[:2])
     t = min(timer.repeat(100, 1))*10**6
-    return round(t, 3)
-    # print function_name + ": " + "{:5.2f}".format(t) + " mikrosekund"
+    print function_name + ": " + "{:5.2f}".format(t) + " mikrosekund"
 
 base_graph = [cg.irisG, cg.abaloneG]
 
@@ -80,49 +79,44 @@ def f8(i, attr):
     return base_graph[i][attr].value[0], base_graph[i][attr].value[-1]
 
 
-tf1_IRISG = [print_time("f1(0, 'sl', 5.0)"), print_time("f1(0, 'sw', 4.0)"),
-            print_time("f1(0, 'pl', 1.5)"), print_time("f1(0, 'pw', 0.2)")]
+# print_time("f2(0, 'sl', 5.0, 5.5)")
+# print_time("f2(0, 'sw', 3.5, 4.0)")
+# print_time("f2(0, 'pl', 1.3, 1.5)")
+# print_time("f2(0, 'pw', 0.2, 0.4)")
+#
+# print_time("f2(1, 'l', 0.38, 0.55)")
+# print_time("f2(1, 'w', 0.002, 0.0155)")
+# print_time("f2(1, 'shell_w', 0.115, 0.2)")
+# print_time("f2(1, 'ring', 9.0, 12)")
+#
+# print_time("f3(0, 'sl', 5.5)")
+# print_time("f3(0, 'sw', 4.0)")
+# print_time("f3(0, 'pl', 1.5)")
+# print_time("f3(0, 'pw', 0.4)")
+#
+# print_time("f3(1, 'l', 0.55)")
+# print_time("f3(1, 'w', 0.0155)")
+# print_time("f3(1, 'shell_w', 0.2)")
+# print_time("f3(1, 'ring', 9.0)")
 
-tf1_ABAG = [print_time("f1(1, 'l', 0.38)"), print_time("f1(1, 'w', 0.887)"),
-            print_time("f1(1, 'shell_w', 0.115)"), print_time("f1(1, 'ring', 9.0)")]
-
-print_time("f2(0, 'sl', 5.0, 5.5)")
-print_time("f2(0, 'sw', 3.5, 4.0)")
-print_time("f2(0, 'pl', 1.3, 1.5)")
-print_time("f2(0, 'pw', 0.2, 0.4)")
-
-print_time("f2(1, 'l', 0.38, 0.55)")
-print_time("f2(1, 'w', 0.002, 0.0155)")
-print_time("f2(1, 'shell_w', 0.115, 0.2)")
-print_time("f2(1, 'ring', 9.0, 12)")
-
-print_time("f3(0, 'sl', 5.5)")
-print_time("f3(0, 'sw', 4.0)")
-print_time("f3(0, 'pl', 1.5)")
-print_time("f3(0, 'pw', 0.4)")
-
-print_time("f3(1, 'l', 0.55)")
-print_time("f3(1, 'w', 0.0155)")
-print_time("f3(1, 'shell_w', 0.2)")
-print_time("f3(1, 'ring', 9.0)")
-
-tf4_IRISG = [print_time("f4(0, 'sl', 10)"), print_time("f4(0, 'sw', 10)"),
-             print_time("f4(0, 'pl', 10)"), print_time("f4(0, 'pw', 10)")]
-
-tf4_ABAG = [print_time("f4(1, 'l', 10)"), print_time("f4(1, 'd', 10)"),
-            print_time("f4(1, 'h', 10)"), print_time("f4(1, 'w', 10)")]
-
-tf6_IRISG = [print_time("f6(0, 'sl')"), print_time("f6(0, 'sw')"),
-             print_time("f6(0, 'pl')"), print_time("f6(0, 'pw')")]
-
-tf6_ABAG = [print_time("f6(1, 'l')"), print_time("f6(1, 'd')"),
-             print_time("f6(1, 'h')"), print_time("f6(1, 'w')")]
-
-tf8_IRISG = [print_time("f8(0, 'sl')"), print_time("f8(0, 'sw')"),
-              print_time("f8(0, 'pl')"), print_time("f8(0, 'pw')")]
-
-tf8_ABAG = [print_time("f8(1, 'l')"), print_time("f8(1, 'd')"),
-             print_time("f8(1, 'h')"), print_time("f8(1, 'w')")]
+# print_time("f1(0, 'sl', 5.0)")
+# print_time("f1(0, 'sw', 4.0)")
+# print_time("f1(0, 'pl', 1.5)")
+# print '***'
+# print_time("f1(1, 'l', 0.38)")
+# print_time("f1(1, 'w', 0.887)")
+# print_time("f1(1, 'shell_w', 0.115)")
+# print_time("f1(1, 'ring', 9.0)")
+# print '***'
+# print_time("f6(1, 'l')")
+# print_time("f6(1, 'd')")
+# print_time("f6(1, 'h')")
+# print_time("f6(1, 'w')")
+# print '***'
+# print_time("f8(0, 'sl')")
+# print_time("f8(0, 'sw')")
+# print_time("f8(0, 'pl')")
+# print_time("f8(0, 'pw')")
 
 
 
