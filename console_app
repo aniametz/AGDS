@@ -1,0 +1,341 @@
+from click import *
+import timeit
+import sqlite3
+import operations_db as db
+import operations_graph as gr
+import create_graph as cg
+
+# zmienne globalne do pomiaru czasu
+g = Group()
+d = None
+a = ''
+v = 0
+a2 = ''
+v2 = 0
+c = None
+
+
+def print_time(function_name):
+    timer = timeit.Timer(function_name, "from __main__ import db, gr, d, a, v, a2, v2, c")
+    t = min(timer.repeat(100, 1))*10**6
+    print "Czas operacji: " + "{:5.2f}".format(t) + " mikrosekund"
+
+
+def params():
+    attributes = []
+    d = []
+    for node, nt in cg.irisG:
+        if node not in ["cl", "r"]:
+            d.append((node, nt.key[0], nt.key[-1]))
+    attributes.append(d)
+    d = []
+    for node, nt in cg.abaloneG:
+        if node not in ["s", "r"]:
+            d.append((node, nt.key[0], nt.key[-1]))
+    attributes.append(d)
+    return attributes
+
+
+def find_key_dict(key, dict):
+    if key in dict:
+        return key
+    else:
+        return min(dict.key, key=lambda k: abs(k - key))
+
+
+@g.command()
+@option('--database', prompt="Wybierz baze danych: Iris [0] Abalone [1]", type=Choice(["0", "1"]))
+@option('--function', prompt="Wybierz sposob przeszukiwania danych: 1 - 9", type=Choice(["1", "2", "3", "4", "5", "6",
+                                                                                         "7", "8", "9"]))
+def choose_function(database, function):
+    global d
+    d = int(database)
+    p = params()
+    echo("Dostepne atrybuty i ich przedzialy: " + str(p[d]))
+    if function == "1":
+        echo("Operacja 1. pozwala na wyswietlenie obiektow o wybranym atrybucie rownym wybranej wartosci.")
+        function_1()
+    if function == "2":
+        echo("Operacja 2. pozwala na wyswietlenie obiektow o wartosciach wybranego atrybutu,"
+             " ktore mieszcza sie w wybranym przedziale.")
+        function_2()
+    if function == "3":
+        echo("Operacja 3. pozwala na wyswietlenie obiektow o wartosciach wybranego atrybutu,"
+             " ktore sa powyzej wybranego progu.")
+        function_3()
+    if function == "4":
+        echo("Operacja 4. pozwala na wyswietlenie wybranej liczby obiektow o maksymalnych wartosciach wybranego atrybutu. "
+             "Potencjalne roznice w wynikach miedzy tabela a grafem spowodowane sa roznymi metodami sortowania rekordow.")
+        function_4()
+    if function == "5":
+        echo("Operacja 5. pozwala na wyswietlenie obiektow o wartosciach atrybutu I powyzej wybranego progu I "
+             "oraz o wartosciach atrybutu II ponizej wybranego progu II.")
+        function_5()
+    if function == "6":
+        echo("Operacja 6. pozwala na wyswietlenie najczesciej powtarzajacej sie wartosci wybranego atrybutu wraz z obiektami,"
+             " do ktorych jest przypisana.")
+        function_6()
+    if function == "7":
+        echo("Operacja 7. pozwala na wyswietlenie obiektow o calkowitym podobienstwie do wybranego rekordu w bazie Iris "
+             "lub o calkowitym podobienstwie do wybranego rekordu wzgledem atrybutow l, d, h w bazie Abalone.")
+        function_7()
+    if function == "8":
+        echo("Operacja 8. pozwala na wyswietlenie obiektow calkowicie rozlacznych wzgledem jednego atrybutu.")
+        function_8()
+    if function == "9":
+        echo(
+            "Operacja 9. pozwala na wyswietlenie obiektow i stopnia czesciowego podobienstwa do wybranego rekordu "
+            "wzgledem wszystkich atrybutow w bazie Iris lub wzgledem atrybutow l, d, h w bazie Abalone.")
+        function_9()
+
+@g.command()
+@option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
+@option('--attr', prompt="Wybierz atrybut")
+@option('--val', prompt="Wybierz wartosc")
+def function_1(structure, attr, val):
+    global a
+    a = str(attr)
+    global v
+    v = float(val)
+    if structure == "0":
+        v = find_key_dict(float(val), gr.base_graph[d][attr])
+        print "Szukane rekordy: ",
+        print gr.f1(d, a, v)
+        print_time("gr.f1(d, a, v)")
+    else:
+        DB = sqlite3.connect(db.base_table[d]+".db")
+        global c
+        c = DB.cursor()
+        print "Szukane rekordy: ",
+        print db.f1(d, c, a, v)
+        print_time("db.f1(d, c, a, v)")
+        DB.close()
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+@g.command()
+@option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
+@option('--attr', prompt="Wybierz atrybut")
+@option('--val1', prompt="Wybierz wartosc I")
+@option('--val2', prompt="Wybierz wartosc II wieksza od wartosci I")
+def function_2(structure, attr, val1, val2):
+    global a
+    a = str(attr)
+    global v
+    v = float(val1)
+    global v2
+    v2 = float(val2)
+    if structure == "0":
+        v = find_key_dict(float(val1), gr.base_graph[d][attr])
+        v2 = find_key_dict(float(val2), gr.base_graph[d][attr])
+        print "Szukane rekordy: ",
+        print gr.f2(d, a, v, v2)
+        print_time("gr.f2(d, a, v, v2)")
+    else:
+        DB = sqlite3.connect(db.base_table[d] + ".db")
+        global c
+        c = DB.cursor()
+        print "Szukane rekordy: ",
+        print db.f2(d, c, a, v, v2)
+        print_time("db.f2(d, c, a, v, v2)")
+        DB.close()
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+@g.command()
+@option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
+@option('--attr', prompt="Wybierz atrybut")
+@option('--val', prompt="Wybierz wartosc progowa")
+def function_3(structure, attr, val):
+    global a
+    a = str(attr)
+    global v
+    v = float(val)
+    if structure == "0":
+        v = find_key_dict(float(val), gr.base_graph[d][attr])
+        print "Szukane rekordy: ",
+        print gr.f3(d, a, v)
+        print_time("gr.f3(d, a, v)")
+    else:
+        DB = sqlite3.connect(db.base_table[d] + ".db")
+        global c
+        c = DB.cursor()
+        print "Szukane rekordy: ",
+        print db.f3(d, c, a, v)
+        print_time("db.f3(d, c, a, v)")
+        DB.close()
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+@g.command()
+@option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
+@option('--attr', prompt="Wybierz atrybut")
+@option('--n', prompt="Wybierz ilosc obiektow")
+def function_4(structure, attr, n):
+    global a
+    a = str(attr)
+    global v
+    v = int(n)
+    if structure == "0":
+        print "Szukane rekordy: ",
+        print gr.f4(d, a, v)
+        print_time("gr.f4(d, a, v)")
+    else:
+        DB = sqlite3.connect(db.base_table[d] + ".db")
+        global c
+        c = DB.cursor()
+        print "Szukane rekordy: ",
+        print db.f4(d, c, a, v)
+        print_time("db.f4(d, c, a, v)")
+        DB.close()
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+@g.command()
+@option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
+@option('--attr1', prompt="Wybierz atrybut I")
+@option('--val1', prompt="Wybierz wartosc progowa I")
+@option('--attr2', prompt="Wybierz atrybut II")
+@option('--val2', prompt="Wybierz wartosc progowa II")
+def function_5(structure, attr1, val1, attr2, val2):
+    global a
+    a = str(attr1)
+    global a2
+    a2 = str(attr2)
+    global v
+    v = float(val1)
+    global v2
+    v2 = float(val2)
+    if structure == "0":
+        v = find_key_dict(float(val1), gr.base_graph[d][attr1])
+        v2 = find_key_dict(float(val2), gr.base_graph[d][attr2])
+        print "Szukane rekordy: ",
+        print gr.f5(d, a, v, a2, v2)
+        print_time("gr.f5(d, a, v, a2, v2)")
+    else:
+        DB = sqlite3.connect(db.base_table[d] + ".db")
+        global c
+        c = DB.cursor()
+        print "Szukane rekordy: ",
+        print db.f5(d, c, a, v, a2, v2)
+        print_time("db.f5(d, c, a, v, a2, v2)")
+        DB.close()
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+@g.command()
+@option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
+@option('--attr', prompt="Wybierz atrybut")
+def function_6(structure, attr):
+    global a
+    a = str(attr)
+    if structure == "0":
+        print "Szukane rekordy: ",
+        print gr.f6(d, a)
+        print_time("gr.f6(d, a)")
+    else:
+        DB = sqlite3.connect(db.base_table[d] + ".db")
+        global c
+        c = DB.cursor()
+        print "Szukane rekordy: ",
+        print db.f6(d, c, a)
+        print_time("db.f6(d, c, a)")
+        DB.close()
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+
+@g.command()
+@option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
+@option('--record', prompt="Wybierz rekord")
+def function_7(structure, record):
+    global v
+    v = int(record)
+    if structure == "0":
+        if d == "0":
+            print "Szukane rekordy: ",
+            print gr.fi(v)
+            print_time("gr.fi(v)")
+        else:
+            print "Szukane rekordy: ",
+            print gr.fa(v)
+            print_time("gr.fa(v)")
+    else:
+        global c
+        if d == "0":
+            DB = sqlite3.connect("iris.db")
+            c = DB.cursor()
+            print "Szukane rekordy: ",
+            print db.fi(c, v)
+            print_time("db.fi(c, v)")
+            DB.close()
+        else:
+            DB = sqlite3.connect("abalone.db")
+            c = DB.cursor()
+            print "Szukane rekordy: ",
+            print db.fa(c, v)
+            print_time("db.fa(c, v)")
+            DB.close()
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+@g.command()
+@option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
+@option('--attr', prompt="Wybierz atrybut")
+def function_8(structure, attr):
+    global a
+    a = str(attr)
+    if structure == "0":
+        print "Szukane rekordy: ",
+        print gr.f8(d, a)
+        print_time("gr.f8(d, a)")
+    else:
+        DB = sqlite3.connect(db.base_table[d] + ".db")
+        global c
+        c = DB.cursor()
+        print "Szukane rekordy: ",
+        print db.f8(d, c, a)
+        print_time("db.f8(d, c, a)")
+        DB.close()
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+@g.command()
+@option('--record', prompt="Wybierz rekord")
+def function_9(record):
+    global v
+    v = int(record)
+    if d == "0":
+        print "Szukane rekordy: ",
+        print gr.ci(v)
+        print_time("gr.ci(v)")
+    else:
+        print "Szukane rekordy: ",
+        print gr.ca(v)
+        print_time("gr.ca(v)")
+    if confirm('Do you want to continue?'):
+        choose_function()
+    else:
+        exit()
+
+
+if __name__ == '__main__':
+    echo("Aplikacja umozliwia porownanie czasu przeszukiwania tablicy oraz grafu.")
+    choose_function()
+    exit()

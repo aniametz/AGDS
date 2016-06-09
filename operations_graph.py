@@ -1,12 +1,5 @@
-import timeit
 from itertools import *
 import create_graph as cg
-
-
-def print_time(function_name):
-    timer = timeit.Timer(function_name, "from __main__ import " + function_name[:2])
-    t = min(timer.repeat(100, 1))*10**6
-    print function_name + ": " + "{:5.2f}".format(t) + " mikrosekund"
 
 base_graph = [cg.irisG, cg.abaloneG]
 
