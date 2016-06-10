@@ -118,7 +118,6 @@ def ca(record):
           for k in set(d[0]) | set(d[1]) | set(d[2])}
     return D
 
-#sorted(D.items(), key=itemgetter(1), reverse=True)
 
 
 

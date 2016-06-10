@@ -4,7 +4,6 @@ import csv
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-
 def read_data(filename):
     with open(os.path.join(APP_ROOT, filename)) as csvfile:
         data = [row for row in csv.reader(csvfile.read().splitlines())]
