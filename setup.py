@@ -1,8 +1,8 @@
-from distutils.core import setup
-import os
-from py2exe.build_exe import py2exe
+from cx_Freeze import setup, Executable
 
-APP_ROOT = os.path.dirname(os.path.abspath(__file__))
-
-data_files = [('csv_files', [os.path.join(APP_ROOT, "iris.csv")]), ('csv_files', [os.path.join(APP_ROOT, "abalone.csv")])]
-setup(console=[{"script": "console_app.py"}], data_files=data_files, options={"py2exe":{"unbuffered": True, "optimize": 2}}, zipfile = None)
+setup(
+    name="console_app",
+    version="0.1",
+    description=" ",
+    executables=[Executable("console_app.py")]
+    )
