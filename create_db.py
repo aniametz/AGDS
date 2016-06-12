@@ -1,17 +1,19 @@
-import os
+import inspect, os
 import csv
 import sqlite3
 
-APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+APP_ROOT = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+path = os.path.join(APP_ROOT, 'csv_files')
+db_path = os.path.join(APP_ROOT, 'db_files')
 
 
 def read_data(filename):
-    with open(os.path.join(APP_ROOT, filename)) as csvfile:
+    with open(os.path.join(path, filename)) as csvfile:
         data = [row for row in csv.reader(csvfile.read().splitlines())]
     return data
 
-
-irisDB = sqlite3.connect('iris.db')  # 150 rekordow
+db_name = 'iris.db'
+irisDB = sqlite3.connect(os.path.join(db_path, db_name))  # 150 rekordow
 irisC = irisDB.cursor()
 
 irisC.execute("DROP TABLE iris")
@@ -31,8 +33,8 @@ print(irisC.fetchall())
 
 irisDB.close()
 
-
-aDB = sqlite3.connect('abalone.db')  # 4177 rekordow
+db_name = 'abalone.db'
+aDB = sqlite3.connect(os.path.join(db_path, db_name))  # 4177 rekordow
 aC = aDB.cursor()
 
 aC.execute("DROP TABLE abalone")

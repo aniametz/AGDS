@@ -1,9 +1,13 @@
 from click import *
+import os, inspect
 import timeit
 import sqlite3
 import operations_db as db
 import operations_graph as gr
 import create_graph as cg
+
+APP_ROOT = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+db_path = os.path.join(APP_ROOT, 'db_files')
 
 # zmienne globalne do pomiaru czasu
 g = Group()
@@ -24,11 +28,13 @@ def print_time(function_name):
 def params():
     attributes = []
     d = []
+    d.append(("Liczba rekordow", 1, 150))
     for node, nt in cg.irisG:
         if node not in ["cl", "r"]:
             d.append((node, nt.key[0], nt.key[-1]))
     attributes.append(d)
     d = []
+    d.append(("Liczba rekordow", 1, 4177))
     for node, nt in cg.abaloneG:
         if node not in ["s", "r"]:
             d.append((node, nt.key[0], nt.key[-1]))
@@ -99,14 +105,24 @@ def function_1(structure, attr, val):
     global a
     a = str(attr)
     global v
-    v = float(val)
+    try:
+        v = float(val)
+    except Exception:
+        print "Nieprawidlowa wartosc."
+        function_1()
     if structure == "0":
-        v = find_key_dict(float(val), gr.base_graph[d][attr])
+        try:
+            gr.base_graph[d][a]
+        except Exception:
+            print "Nieprawidlowa nazwa atrybutu."
+            function_1()
+        v = find_key_dict(float(val), gr.base_graph[d][a])
         print "Szukane rekordy: ",
         print gr.f1(d, a, v)
         print_time("gr.f1(d, a, v)")
     else:
-        DB = sqlite3.connect(db.base_table[d]+".db")
+        db_name = db.base_table[d]+".db"
+        DB = sqlite3.connect(os.path.join(db_path, db_name))
         global c
         c = DB.cursor()
         print "Szukane rekordy: ",
@@ -126,18 +142,30 @@ def function_1(structure, attr, val):
 def function_2(structure, attr, val1, val2):
     global a
     a = str(attr)
-    global v
-    v = float(val1)
-    global v2
-    v2 = float(val2)
+    global v, v2
+    try:
+        v = float(val1)
+        v2 = float(val2)
+    except Exception:
+        print "Nieprawidlowa wartosc."
+        function_2()
+    if val1 >= val2:
+        print "Wybrana wartosc II jest nieprawidlowa."
+        function_2()
     if structure == "0":
-        v = find_key_dict(float(val1), gr.base_graph[d][attr])
-        v2 = find_key_dict(float(val2), gr.base_graph[d][attr])
+        try:
+            gr.base_graph[d][a]
+        except Exception:
+            print "Nieprawidlowa nazwa atrybutu."
+            function_2()
+        v = find_key_dict(float(val1), gr.base_graph[d][a])
+        v2 = find_key_dict(float(val2), gr.base_graph[d][a])
         print "Szukane rekordy: ",
         print gr.f2(d, a, v, v2)
         print_time("gr.f2(d, a, v, v2)")
     else:
-        DB = sqlite3.connect(db.base_table[d] + ".db")
+        db_name = db.base_table[d] + ".db"
+        DB = sqlite3.connect(os.path.join(db_path, db_name))
         global c
         c = DB.cursor()
         print "Szukane rekordy: ",
@@ -157,14 +185,24 @@ def function_3(structure, attr, val):
     global a
     a = str(attr)
     global v
-    v = float(val)
+    try:
+        v = float(val)
+    except Exception:
+        print "Nieprawidlowa wartosc."
+        function_3()
     if structure == "0":
-        v = find_key_dict(float(val), gr.base_graph[d][attr])
+        try:
+            gr.base_graph[d][a]
+        except Exception:
+            print "Nieprawidlowa nazwa atrybutu."
+            function_3()
+        v = find_key_dict(float(val), gr.base_graph[d][a])
         print "Szukane rekordy: ",
         print gr.f3(d, a, v)
         print_time("gr.f3(d, a, v)")
     else:
-        DB = sqlite3.connect(db.base_table[d] + ".db")
+        db_name = db.base_table[d] + ".db"
+        DB = sqlite3.connect(os.path.join(db_path, db_name))
         global c
         c = DB.cursor()
         print "Szukane rekordy: ",
@@ -186,11 +224,17 @@ def function_4(structure, attr, n):
     global v
     v = int(n)
     if structure == "0":
+        try:
+            gr.base_graph[d][a]
+        except Exception:
+            print "Nieprawidlowa nazwa atrybutu."
+            function_4()
         print "Szukane rekordy: ",
         print gr.f4(d, a, v)
         print_time("gr.f4(d, a, v)")
     else:
-        DB = sqlite3.connect(db.base_table[d] + ".db")
+        db_name = db.base_table[d] + ".db"
+        DB = sqlite3.connect(os.path.join(db_path, db_name))
         global c
         c = DB.cursor()
         print "Szukane rekordy: ",
@@ -213,18 +257,32 @@ def function_5(structure, attr1, val1, attr2, val2):
     a = str(attr1)
     global a2
     a2 = str(attr2)
-    global v
-    v = float(val1)
-    global v2
-    v2 = float(val2)
+    global v, v2
+    try:
+        v = float(val1)
+        v2 = float(val2)
+    except Exception:
+        print "Nieprawidlowa wartosc."
+        function_5()
     if structure == "0":
-        v = find_key_dict(float(val1), gr.base_graph[d][attr1])
-        v2 = find_key_dict(float(val2), gr.base_graph[d][attr2])
+        try:
+            gr.base_graph[d][a]
+        except Exception:
+            print "Nieprawidlowa nazwa atrybutu."
+            function_5()
+        try:
+            gr.base_graph[d][a2]
+        except Exception:
+            print "Nieprawidlowa nazwa atrybutu."
+            function_5()
+        v = find_key_dict(float(val1), gr.base_graph[d][a])
+        v2 = find_key_dict(float(val2), gr.base_graph[d][a2])
         print "Szukane rekordy: ",
         print gr.f5(d, a, v, a2, v2)
         print_time("gr.f5(d, a, v, a2, v2)")
     else:
-        DB = sqlite3.connect(db.base_table[d] + ".db")
+        db_name = db.base_table[d] + ".db"
+        DB = sqlite3.connect(os.path.join(db_path, db_name))
         global c
         c = DB.cursor()
         print "Szukane rekordy: ",
@@ -243,11 +301,17 @@ def function_6(structure, attr):
     global a
     a = str(attr)
     if structure == "0":
+        try:
+            gr.base_graph[d][a]
+        except Exception:
+            print "Nieprawidlowa nazwa atrybutu."
+            function_6()
         print "Szukane rekordy: ",
         print gr.f6(d, a)
         print_time("gr.f6(d, a)")
     else:
-        DB = sqlite3.connect(db.base_table[d] + ".db")
+        db_name = db.base_table[d] + ".db"
+        DB = sqlite3.connect(os.path.join(db_path, db_name))
         global c
         c = DB.cursor()
         print "Szukane rekordy: ",
@@ -265,7 +329,13 @@ def function_6(structure, attr):
 @option('--record', prompt="Wybierz rekord")
 def function_7(structure, record):
     global v
-    v = int(record)
+    try:
+        v = int(record)
+        gr.fi(v)
+        gr.fa(v)
+    except Exception:
+        print "Nieprawidlowa wartosc."
+        function_7()
     if structure == "0":
         if d == "0":
             print "Szukane rekordy: ",
@@ -278,14 +348,16 @@ def function_7(structure, record):
     else:
         global c
         if d == "0":
-            DB = sqlite3.connect("iris.db")
+            db_name = "iris.db"
+            DB = sqlite3.connect(os.path.join(db_path, db_name))
             c = DB.cursor()
             print "Szukane rekordy: ",
             print db.fi(c, v)
             print_time("db.fi(c, v)")
             DB.close()
         else:
-            DB = sqlite3.connect("abalone.db")
+            db_name = "abalone.db"
+            DB = sqlite3.connect(os.path.join(db_path, db_name))
             c = DB.cursor()
             print "Szukane rekordy: ",
             print db.fa(c, v)
@@ -303,16 +375,24 @@ def function_8(structure, attr):
     global a
     a = str(attr)
     if structure == "0":
+        try:
+            gr.base_graph[d][a]
+        except Exception:
+            print "Nieprawidlowa nazwa atrybutu."
+            function_8()
         print "Szukane rekordy: ",
         print gr.f8(d, a)
         print_time("gr.f8(d, a)")
     else:
-        DB = sqlite3.connect(db.base_table[d] + ".db")
+        db_name = db.base_table[d] + ".db"
+        DB = sqlite3.connect(os.path.join(db_path, db_name))
         global c
         c = DB.cursor()
         print "Szukane rekordy: ",
         print db.f8(d, c, a)
+        pause()
         print_time("db.f8(d, c, a)")
+        pause()
         DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
@@ -323,7 +403,13 @@ def function_8(structure, attr):
 @option('--record', prompt="Wybierz rekord")
 def function_9(record):
     global v
-    v = int(record)
+    try:
+        v = int(record)
+        gr.ci(v)
+        gr.ca(v)
+    except Exception:
+        print "Nieprawidlowa wartosc."
+        function_9()
     if d == "0":
         print "Szukane rekordy: ",
         print gr.ci(v)

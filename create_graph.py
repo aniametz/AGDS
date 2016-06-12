@@ -1,11 +1,13 @@
 from collections import defaultdict, namedtuple
-import os
+import inspect, os
 import csv
 
-APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+APP_ROOT = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+path = os.path.join(APP_ROOT, 'csv_files')
+
 
 def read_data(filename):
-    with open(os.path.join(APP_ROOT, filename)) as csvfile:
+    with open(os.path.join(path, filename)) as csvfile:
         data = [row for row in csv.reader(csvfile.read().splitlines())]
     return data
 

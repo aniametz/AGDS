@@ -1,4 +1,3 @@
-import sqlite3
 
 base_table = ["iris", "abalone"]
 
