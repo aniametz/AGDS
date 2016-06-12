@@ -93,9 +93,9 @@ def choose_function(database, function):
     if function == "9":
         echo(
             "Operacja 9. pozwala na wyswietlenie obiektow i stopnia czesciowego podobienstwa do wybranego rekordu "
-            "wzgledem wszystkich atrybutow w bazie Iris lub wzgledem atrybutow l, d, h w bazie Abalone.")
+            "wzgledem wszystkich atrybutow w bazie Iris (maksymalna waga: 4) lub wzgledem atrybutow l, d, h "
+            "w bazie Abalone (maksymalna waga: 3).")
         function_9()
-    exit()
 
 @g.command()
 @option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
@@ -104,6 +104,11 @@ def choose_function(database, function):
 def function_1(structure, attr, val):
     global a
     a = str(attr)
+    try:
+        gr.base_graph[d][a]
+    except Exception:
+        print "Nieprawidlowa nazwa atrybutu."
+        function_1()
     global v
     try:
         v = float(val)
@@ -111,11 +116,6 @@ def function_1(structure, attr, val):
         print "Nieprawidlowa wartosc."
         function_1()
     if structure == "0":
-        try:
-            gr.base_graph[d][a]
-        except Exception:
-            print "Nieprawidlowa nazwa atrybutu."
-            function_1()
         v = find_key_dict(float(val), gr.base_graph[d][a])
         print "Szukane rekordy: ",
         print gr.f1(d, a, v)
@@ -131,8 +131,6 @@ def function_1(structure, attr, val):
         DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 @g.command()
 @option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
@@ -142,6 +140,11 @@ def function_1(structure, attr, val):
 def function_2(structure, attr, val1, val2):
     global a
     a = str(attr)
+    try:
+        gr.base_graph[d][a]
+    except Exception:
+        print "Nieprawidlowa nazwa atrybutu."
+        function_2()
     global v, v2
     try:
         v = float(val1)
@@ -153,11 +156,6 @@ def function_2(structure, attr, val1, val2):
         print "Wybrana wartosc II jest nieprawidlowa."
         function_2()
     if structure == "0":
-        try:
-            gr.base_graph[d][a]
-        except Exception:
-            print "Nieprawidlowa nazwa atrybutu."
-            function_2()
         v = find_key_dict(float(val1), gr.base_graph[d][a])
         v2 = find_key_dict(float(val2), gr.base_graph[d][a])
         print "Szukane rekordy: ",
@@ -174,8 +172,6 @@ def function_2(structure, attr, val1, val2):
         DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 @g.command()
 @option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
@@ -184,6 +180,11 @@ def function_2(structure, attr, val1, val2):
 def function_3(structure, attr, val):
     global a
     a = str(attr)
+    try:
+        gr.base_graph[d][a]
+    except Exception:
+        print "Nieprawidlowa nazwa atrybutu."
+        function_3()
     global v
     try:
         v = float(val)
@@ -191,11 +192,6 @@ def function_3(structure, attr, val):
         print "Nieprawidlowa wartosc."
         function_3()
     if structure == "0":
-        try:
-            gr.base_graph[d][a]
-        except Exception:
-            print "Nieprawidlowa nazwa atrybutu."
-            function_3()
         v = find_key_dict(float(val), gr.base_graph[d][a])
         print "Szukane rekordy: ",
         print gr.f3(d, a, v)
@@ -211,8 +207,6 @@ def function_3(structure, attr, val):
         DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 @g.command()
 @option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
@@ -221,14 +215,14 @@ def function_3(structure, attr, val):
 def function_4(structure, attr, n):
     global a
     a = str(attr)
+    try:
+        gr.base_graph[d][a]
+    except Exception:
+        print "Nieprawidlowa nazwa atrybutu."
+        function_4()
     global v
     v = int(n)
     if structure == "0":
-        try:
-            gr.base_graph[d][a]
-        except Exception:
-            print "Nieprawidlowa nazwa atrybutu."
-            function_4()
         print "Szukane rekordy: ",
         print gr.f4(d, a, v)
         print_time("gr.f4(d, a, v)")
@@ -243,8 +237,6 @@ def function_4(structure, attr, n):
         DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 @g.command()
 @option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
@@ -253,10 +245,15 @@ def function_4(structure, attr, n):
 @option('--attr2', prompt="Wybierz atrybut II")
 @option('--val2', prompt="Wybierz wartosc progowa II")
 def function_5(structure, attr1, val1, attr2, val2):
-    global a
+    global a, a2
     a = str(attr1)
-    global a2
     a2 = str(attr2)
+    try:
+        gr.base_graph[d][a]
+        gr.base_graph[d][a2]
+    except Exception:
+        print "Nieprawidlowa nazwa atrybutu."
+        function_5()
     global v, v2
     try:
         v = float(val1)
@@ -265,16 +262,6 @@ def function_5(structure, attr1, val1, attr2, val2):
         print "Nieprawidlowa wartosc."
         function_5()
     if structure == "0":
-        try:
-            gr.base_graph[d][a]
-        except Exception:
-            print "Nieprawidlowa nazwa atrybutu."
-            function_5()
-        try:
-            gr.base_graph[d][a2]
-        except Exception:
-            print "Nieprawidlowa nazwa atrybutu."
-            function_5()
         v = find_key_dict(float(val1), gr.base_graph[d][a])
         v2 = find_key_dict(float(val2), gr.base_graph[d][a2])
         print "Szukane rekordy: ",
@@ -291,8 +278,6 @@ def function_5(structure, attr1, val1, attr2, val2):
         DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 @g.command()
 @option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
@@ -300,12 +285,12 @@ def function_5(structure, attr1, val1, attr2, val2):
 def function_6(structure, attr):
     global a
     a = str(attr)
+    try:
+        gr.base_graph[d][a]
+    except Exception:
+        print "Nieprawidlowa nazwa atrybutu."
+        function_6()
     if structure == "0":
-        try:
-            gr.base_graph[d][a]
-        except Exception:
-            print "Nieprawidlowa nazwa atrybutu."
-            function_6()
         print "Szukane rekordy: ",
         print gr.f6(d, a)
         print_time("gr.f6(d, a)")
@@ -320,8 +305,6 @@ def function_6(structure, attr):
         DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 
 @g.command()
@@ -365,8 +348,6 @@ def function_7(structure, record):
             DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 @g.command()
 @option('--structure', prompt="Wybierz sposob przechowywania danych: graf [0] tablica [1]", type=Choice(["0", "1"]))
@@ -374,12 +355,12 @@ def function_7(structure, record):
 def function_8(structure, attr):
     global a
     a = str(attr)
+    try:
+        gr.base_graph[d][a]
+    except Exception:
+        print "Nieprawidlowa nazwa atrybutu."
+        function_8()
     if structure == "0":
-        try:
-            gr.base_graph[d][a]
-        except Exception:
-            print "Nieprawidlowa nazwa atrybutu."
-            function_8()
         print "Szukane rekordy: ",
         print gr.f8(d, a)
         print_time("gr.f8(d, a)")
@@ -390,14 +371,10 @@ def function_8(structure, attr):
         c = DB.cursor()
         print "Szukane rekordy: ",
         print db.f8(d, c, a)
-        pause()
         print_time("db.f8(d, c, a)")
-        pause()
         DB.close()
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 @g.command()
 @option('--record', prompt="Wybierz rekord")
@@ -420,11 +397,8 @@ def function_9(record):
         print_time("gr.ca(v)")
     if confirm('Do you want to continue?'):
         choose_function()
-    else:
-        exit()
 
 
 if __name__ == '__main__':
     echo("Aplikacja umozliwia porownanie czasu przeszukiwania tablicy oraz grafu.")
     choose_function()
-    exit()
